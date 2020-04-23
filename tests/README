@@ -1,4 +1,4 @@
-<h1> How to run JUnit in this directory: </h1>
+# How to run JUnit in this directory:
 
 1. Install JUnit by making sure that both the hamcrest.jar and junit.jar
     are in the folder
