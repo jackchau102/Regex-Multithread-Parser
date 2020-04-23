@@ -6,8 +6,21 @@
 2. Compile classes from nfa folder
 
 3. Compile test classes from this folder with this command:
-(first . signifies the current folder)
-(```./..``` signifies the folder where the nfa packages are)
+
+(first 
+```
+.
+``` 
+
+signifies the current folder)
+
+(
+```
+./..
+``` 
+
+signifies the folder where the nfa packages are)
+
 ```
 javac -cp .:junit-4.13.jar:hamcrest-core-1.3.jar:./.. FILE_NAME.java
 ```
