@@ -1,3 +1,5 @@
+package nfa;
+
 public class ROr implements Regex {
     public final Regex left, right;
     public ROr(Regex left, Regex right) {

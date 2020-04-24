@@ -1,3 +1,5 @@
+package nfa;
+
 public class ParseError extends RuntimeException {
     String text;
     int pos;

@@ -1,3 +1,5 @@
+package nfa;
+
 public class Parser {
     /* General grammar:
 

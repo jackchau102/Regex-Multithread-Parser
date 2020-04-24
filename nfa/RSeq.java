@@ -1,3 +1,5 @@
+package nfa;
+
 public class RSeq implements Regex {
     public final Regex left, right;
     public RSeq(Regex left, Regex right) {

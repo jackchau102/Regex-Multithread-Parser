@@ -1,3 +1,5 @@
+package nfa;
+
 public class RStar implements Regex {
     public final Regex re;
     public RStar(Regex re) {
