@@ -1,6 +1,7 @@
 package nfa;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.lang.*;
 
 public class NFA {
@@ -11,7 +12,7 @@ public class NFA {
   private static int numStates = 0;
 
   public NFA() {
-    graph = new HashMap<>();
+    graph = new HashMap<State, List<Transition>>();
     finalStates = new ArrayList<>();
   }
 
@@ -78,19 +79,47 @@ public class NFA {
   }
 
   public List<Object> states() {
-    throw new UnsupportedOperationException();
+    List<Object> listOfStates = new ArrayList<Object>();
+    for (State s : graph.keySet()){
+      listOfStates.add(s);
+    }
+    return listOfStates;
   }
 
   public Object start_state() {
-    throw new UnsupportedOperationException();
+    return startState;
   }
 
   public List<Object> final_states() {
-    throw new UnsupportedOperationException();
+    List<Object> listOfFinalStates = new ArrayList<Object>();
+    for (State s : finalStates){
+      listOfFinalStates.add(s);
+    }
+    return listOfFinalStates;
   }
 
   public List<Map.Entry<Character, Object>> transition(Object state) {
-    throw new UnsupportedOperationException();
+    List<Transition> listOfTrans= graph.get((State) state);
+    List<Map.Entry<Character, Object>> result = new ArrayList<>();
+
+    // Get Transitions coming from the state
+    for (Transition tran : listOfTrans){
+      Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getStartState());
+      result.add(entry);
+    }
+
+    // Get Transitions coming into the state
+    Set<Map.Entry<State, List<Transition>>> intoState = graph.entrySet();
+    for (Entry e : intoState){
+      List<Transition> listPerState = (List) e.getValue();
+      for (Transition tran : listPerState){
+        if (tran.getEndState().equals(state)){
+          Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getStartState());
+          result.add(entry);
+        }
+      }
+    }
+    return result;
   }
 
   boolean match(String s, int nthreads) {
@@ -122,6 +151,14 @@ public class NFA {
 
   public void makeNewTransition(Object a, char c, Object b){
     newTransition(a, c, b);
+  }
+
+  public void make_Final(Object o){
+    makeFinal(o);
+  }
+
+  public List<Map.Entry<Character, Object>> getTransition(Object state){
+    return transition(state);
   }
 
   /*********** Reset - used for testing only***********/
