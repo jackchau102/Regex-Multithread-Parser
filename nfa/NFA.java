@@ -96,7 +96,9 @@ public class NFA {
     }
   }
 
-  NFA(Regex re) {
+  public NFA(Regex re) {
+    graph = new HashMap<State, List<Transition>>();
+    finalStates = new ArrayList<>();
     buildNFA(re);
   }
 
@@ -145,7 +147,7 @@ public class NFA {
   }
 
   boolean match(String s, int nthreads) {
-    throw new UnsupportedOperationException();
+    return false;
   }
   /*********** NFA Helper functions ***********/
 
@@ -243,13 +245,17 @@ public class NFA {
       else if (curr == '|'){
         Package e = stackPackage.pop();
         Package f = stackPackage.pop();
-        Package toPush = buildDisjunction(e, f);
+        Package toPush = buildDisjunction(f, e);
         stackPackage.push(toPush);
       }
       else if (curr == '.'){
         Package e = stackPackage.pop();
         Package f = stackPackage.pop();
-        Package toPush = buildSequence(e, f);
+        Package toPush = buildSequence(f, e);
+        stackPackage.push(toPush);
+      }
+      else {
+        Package toPush = buildCharacter(curr);
         stackPackage.push(toPush);
       }
     }

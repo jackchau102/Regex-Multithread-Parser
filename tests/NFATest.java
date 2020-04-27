@@ -1,12 +1,12 @@
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.lang.*;
 
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
-import jdk.jfr.Timestamp;
 import nfa.*;
 
 public class NFATest {
@@ -180,22 +180,42 @@ public class NFATest {
         List<Map.Entry<Character, Object>> result2 = nfa1.getTransition(state2);
 
         assertEquals(result0.size(), 2); 
-        System.out.println(result0);
+        // System.out.println(result0);
 
         assertEquals(result2.size(), 4);
-        System.out.println(result2);
+        // System.out.println(result2);
     }
 
     @Test 
     public void testToPostfix(){
         Parser p1 = new Parser("(a|b)(e|f)");
         Regex r1 = p1.parse();
-        System.out.println();
-        System.out.println(nfa1.getConcatenation(r1.toString()));
+        // System.out.println();
+        // System.out.println(nfa1.getConcatenation(r1.toString()));
         
         String rp1 = nfa1.getPostfix(r1.toString());
-        System.out.println(rp1);
+        // System.out.println(rp1);
 
         // assertEquals(rp1, "a*b.c|");
+    }
+
+    @Test 
+    public void testBuildNFA(){
+        Parser p1 = new Parser("(a|b)(e|f)");
+        Regex r1 = p1.parse();
+        System.out.println("\n" + nfa1.getPostfix(r1.toString()));
+
+        NFA newNFA = new NFA(r1);
+        Set<Map.Entry<State, List<Transition>>> entryS = (Set) newNFA.getMap().entrySet();
+
+        System.out.println();
+
+        for (Map.Entry<State, List<Transition>> entry : entryS){
+            System.out.print(entry.getKey() + ": ");
+            List<Transition> listTran = entry.getValue();
+            for (Transition t : listTran)
+                System.out.print(t.getStartState().toString() + " -- " + t.getName() + " --> " + t.getEndState().toString() + "\t");
+            System.out.println();
+        }
     }
 }
