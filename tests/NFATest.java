@@ -185,4 +185,17 @@ public class NFATest {
         assertEquals(result2.size(), 4);
         System.out.println(result2);
     }
+
+    @Test 
+    public void testToPostfix(){
+        Parser p1 = new Parser("(a|b)(e|f)");
+        Regex r1 = p1.parse();
+        System.out.println();
+        System.out.println(nfa1.getConcatenation(r1.toString()));
+        
+        String rp1 = nfa1.getPostfix(r1.toString());
+        System.out.println(rp1);
+
+        // assertEquals(rp1, "a*b.c|");
+    }
 }

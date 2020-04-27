@@ -34,6 +34,10 @@ public class State {
         isLast = true;
     }
 
+    public void makeUnfinal(){
+        isLast = false;
+    }
+
     /*********** Overriding methods ***********/
 
     @Override
