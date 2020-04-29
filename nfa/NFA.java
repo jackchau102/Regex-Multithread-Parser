@@ -32,11 +32,13 @@ public class NFA {
   private HashMap <State, List<Transition>> graph;
   private static State startState;
   private static List<State> finalStates;
-  private static int numStates = 0;
+  private static int numStates;
 
   public NFA() {
     graph = new HashMap<State, List<Transition>>();
     finalStates = new ArrayList<>();
+    numStates = 0;
+    newState();
   }
 
   Object newState() {
@@ -68,6 +70,16 @@ public class NFA {
     if (!graph.containsKey((State) start) || !graph.containsKey((State) end)){
       throw new RuntimeException("States are not found in NFA");
     }
+
+    // Check if char is within valid range (a - z OR #)
+    int ascii = (int) c;
+    boolean notWithinRange = (97 > ascii) || (ascii > 122);
+    boolean notEp = ascii != 35;
+
+    if (notWithinRange && notEp){
+      throw new RuntimeException("Character " + c + " is not valid with ascii value of: " + ascii);
+    }
+
     // Make the new transition
     Transition trans = new Transition((State) start, c, (State) end);
 
@@ -99,6 +111,7 @@ public class NFA {
   public NFA(Regex re) {
     graph = new HashMap<State, List<Transition>>();
     finalStates = new ArrayList<>();
+    numStates = 0;
     buildNFA(re);
   }
 
@@ -264,6 +277,11 @@ public class NFA {
     Package lastPackage = stackPackage.pop();
     startState = lastPackage.getPackageStart();
     finalStates = lastPackage.getPackageFinals();
+
+    // Going through and making sure the final states are actually finals
+    for (State s : finalStates){
+      makeFinal(s);
+    }
   }
 
   /*********** Methods to help build NFA ***********/
@@ -396,6 +414,9 @@ public class NFA {
     return addConcatenation(s);
   }
 
+  public List<Object> getStates(){
+    return states();
+  }
   /*********** Reset - used for testing only***********/
   public void reset(){
     graph.clear();

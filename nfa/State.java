@@ -47,7 +47,7 @@ public class State {
 
         if (s == null) return false;
 
-        if (s.getClass() != this.getClass()) return false;
+        // if (s.getClass() != this.getClass()) return false;
 
         State aux = (State) s;
 

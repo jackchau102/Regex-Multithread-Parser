@@ -11,35 +11,40 @@ import nfa.*;
 
 public class NFATest {
     
-    NFA nfa1;
+    NFA nfa;
 
     @Before
     public void restart(){
-        nfa1 = new NFA();
+        nfa = new NFA();
     }
 
     @After 
     public void reset(){
-        nfa1.reset();
+        nfa.reset();
     }
 
     @Test
     public void testNewState(){
-        State state0 = (State) nfa1.makeNewState();
-        assertEquals(state0.toString(), "s0");
-        assertEquals(nfa1.getNumStates(), 1);
-        assertTrue(nfa1.getMap().containsKey(state0));
+        NFA nfa1 = new NFA();
+
+        State state1 = (State) nfa1.makeNewState();
+        assertEquals(state1.toString(), "s1");
+        assertEquals(nfa1.getNumStates(), 2);
+        assertTrue(nfa1.getMap().containsKey(state1));
+        assertEquals(state1.hashCode(), 1);
+        assertEquals(nfa1.getStartState().hashCode(), 0);
     }
 
     @Test 
     public void testNewTransition(){
+        NFA nfa1 = new NFA();
+
         State state0 = (State) nfa1.makeNewState();
-        assertEquals(nfa1.getMap().size(), 1);
-        assertTrue(nfa1.getStartState().equals(state0));
+        assertEquals(nfa1.getMap().size(), 2);
         assertTrue(nfa1.getMap().containsKey(state0));
 
         State state1 = (State) nfa1.makeNewState();
-        assertEquals(nfa1.getMap().size(), 2);
+        assertEquals(nfa1.getMap().size(), 3);
         assertTrue(nfa1.getMap().containsKey(state1));
 
         nfa1.makeNewTransition(state0, 'a', state1);
@@ -47,14 +52,18 @@ public class NFATest {
 
     @Test 
     public void testStartState(){
-        State state0 = (State) nfa1.makeNewState();
-        assertTrue(nfa1.getStartState().equals(state0));
+        NFA nfa1 = new NFA();
+
+        // State state0 = (State) nfa1.makeNewState();
+        assertEquals(nfa1.getStartState().hashCode(), 0);
     }
 
     @Test 
     public void testFinalState(){
+        NFA nfa1 = new NFA();
+
         State state0 = (State) nfa1.makeNewState();
-        assertEquals(nfa1.getMap().size(), 1);
+        assertEquals(nfa1.getMap().size(), 2);
         
         assertTrue(!state0.isFinal());
         nfa1.make_Final(state0);
@@ -64,6 +73,8 @@ public class NFATest {
 
     @Test 
     public void testFinalStateExtra(){
+        NFA nfa1 = new NFA();
+
         State state0 = (State) nfa1.makeNewState();
         State state1 = (State) nfa1.makeNewState();
         State state2 = (State) nfa1.makeNewState();
@@ -87,6 +98,8 @@ public class NFATest {
 
     @Test
     public void testListStates(){
+        NFA nfa1 = new NFA();
+
         State state0 = (State) nfa1.makeNewState();
         State state1 = (State) nfa1.makeNewState();
         State state2 = (State) nfa1.makeNewState();
@@ -106,6 +119,7 @@ public class NFATest {
 
         List<State> toCheck = new ArrayList<>();
         
+        toCheck.add(nfa1.getStartState());
         toCheck.add(state0);
         toCheck.add(state1);
         toCheck.add(state2);
@@ -151,6 +165,8 @@ public class NFATest {
 
     @Test 
     public void testGetListTran(){
+        NFA nfa1 = new NFA();
+
         State state0 = (State) nfa1.makeNewState();
         State state1 = (State) nfa1.makeNewState();
         State state2 = (State) nfa1.makeNewState();
@@ -170,7 +186,7 @@ public class NFATest {
         nfa1.makeNewTransition(state0, '#', state3);
         nfa1.makeNewTransition(state3, 'g', state5);
         nfa1.makeNewTransition(state3, 'q', state1);
-        nfa1.makeNewTransition(state1, '|', state5);
+        nfa1.makeNewTransition(state1, 'j', state5);
         nfa1.makeNewTransition(state4, 'e', state6);
         nfa1.makeNewTransition(state5, '#', state6);
         nfa1.makeNewTransition(state6, 'r', state7);
@@ -188,6 +204,8 @@ public class NFATest {
 
     @Test 
     public void testToPostfix(){
+        NFA nfa1 = new NFA();
+
         Parser p1 = new Parser("(a|b)(e|f)");
         Regex r1 = p1.parse();
         // System.out.println();
@@ -199,13 +217,16 @@ public class NFATest {
         // assertEquals(rp1, "a*b.c|");
     }
 
-    @Test 
+    // @Test 
     public void testBuildNFA(){
+        NFA nfa1 = new NFA();
         Parser p1 = new Parser("(a|b)(e|f)");
         Regex r1 = p1.parse();
         System.out.println("\n" + nfa1.getPostfix(r1.toString()));
 
         NFA newNFA = new NFA(r1);
+
+        /************** Printing out the map **************/
         Set<Map.Entry<State, List<Transition>>> entryS = (Set) newNFA.getMap().entrySet();
 
         System.out.println();
@@ -217,5 +238,33 @@ public class NFATest {
                 System.out.print(t.getStartState().toString() + " -- " + t.getName() + " --> " + t.getEndState().toString() + "\t");
             System.out.println();
         }
+        /********************************************************/
+    }
+
+    @Test
+    public void testBuildNFA2(){
+        Parser p1 = new Parser("z");
+        Regex r1 = p1.parse();
+        NFA newNFA = new NFA(r1);
+
+        assertEquals(newNFA.getStartState().hashCode(), 0);
+        assertEquals(newNFA.getFinalStates().size(), 1);
+        
+        System.out.println();
+        System.out.println(newNFA.getStates());
+        
+        /************** Printing out the map **************/
+        Set<Map.Entry<State, List<Transition>>> entryS = (Set) newNFA.getMap().entrySet();
+
+        System.out.println();
+
+        for (Map.Entry<State, List<Transition>> entry : entryS){
+            System.out.print(entry.getKey() + ": ");
+            List<Transition> listTran = entry.getValue();
+            for (Transition t : listTran)
+                System.out.print(t.getStartState().toString() + " -- " + t.getName() + " --> " + t.getEndState().toString() + "\t");
+            System.out.println();
+        }
+        /********************************************************/
     }
 }
