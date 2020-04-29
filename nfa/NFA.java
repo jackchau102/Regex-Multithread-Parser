@@ -160,8 +160,55 @@ public class NFA {
   }
 
   boolean match(String s, int nthreads) {
-    return false;
+    return check(s, startState);
   }
+  
+  /*********** Match Helper functions ***********/
+
+  boolean check(String s, State curr){
+
+    // Reach a final state and the string is fully matched
+    if (s.length() == 0 && curr.isFinal()){
+      return true;
+    }
+
+    List<Transition> trans = graph.get(curr);
+
+    // Reach a final state with no other transitions but string is not fully matched
+    if (trans.size() == 0 && s.length() != 0){
+      return false;
+    }
+
+    char currChar = 0;
+
+    if (s.length() != 0){
+      currChar = s.charAt(0);
+    }
+      
+    boolean result = false;
+
+    for (Transition tran : trans){
+
+      State next = tran.getEndState();
+
+      if (tran.getName().equals(currChar)){
+        String subS = s.substring(1);
+        result = check(subS, next);
+      }
+      else if (tran.getName().equals('#')){
+        result = check(s, next);
+      }
+
+      // If found a match, return immediately
+      if (result){
+        return result;
+      }
+    }
+
+    return result;
+  }
+
+
   /*********** NFA Helper functions ***********/
 
   // Add '.' as a operation for sequencing
@@ -416,6 +463,10 @@ public class NFA {
 
   public List<Object> getStates(){
     return states();
+  }
+
+  public boolean getMatch(String s, int nthreads){
+    return match(s, nthreads);
   }
   /*********** Reset - used for testing only***********/
   public void reset(){

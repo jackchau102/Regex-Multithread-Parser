@@ -13,12 +13,12 @@ public class Main {
     
     System.out.println(r.toString());
     
-  	// NFA nfa = new NFA(r);
-  	// if (nfa.match(args[1], 4)) {
-    //   System.out.println("yes");
-    // }
-  	// else {
-    //   System.out.println("no");
-  	// }
+  	NFA nfa = new NFA(r);
+  	if (nfa.getMatch(args[1], 4)) {
+      System.out.println("yes");
+    }
+  	else {
+      System.out.println("no");
+  	}
   }
 }
