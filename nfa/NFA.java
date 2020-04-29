@@ -1,8 +1,7 @@
 package nfa;
 
 import java.util.*;
-import java.util.Map.Entry;
-
+import java.util.Map.Entry; 
 import java.lang.*;
 
 public class NFA {
@@ -141,31 +140,32 @@ public class NFA {
 
     // Get Transitions coming out of the state
     for (Transition tran : listOfTrans){
-      Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getStartState());
+      Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getEndState());
       result.add(entry);
     }
 
-    // Get Transitions coming into the state
-    Set<Map.Entry<State, List<Transition>>> intoState = graph.entrySet();
-    for (Entry e : intoState){
-      List<Transition> listPerState = (List) e.getValue();
-      for (Transition tran : listPerState){
-        if (tran.getEndState().equals(state)){
-          Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getStartState());
-          result.add(entry);
-        }
-      }
-    }
+    // // Get Transitions coming into the state
+    // Set<Map.Entry<State, List<Transition>>> intoState = graph.entrySet();
+    // for (Entry e : intoState){
+    //   List<Transition> listPerState = (List) e.getValue();
+    //   for (Transition tran : listPerState){
+    //     if (tran.getEndState().equals(state)){
+    //       Map.Entry<Character, Object> entry = new AbstractMap.SimpleEntry<Character, Object>(tran.getName(), tran.getEndState());
+    //       result.add(entry);
+    //     }
+    //   }
+    // }
     return result;
   }
 
   boolean match(String s, int nthreads) {
-    return check(s, startState);
+    Map<State, Set<String>> visit = new HashMap<>();
+    return check(s, startState, visit);
   }
   
   /*********** Match Helper functions ***********/
 
-  boolean check(String s, State curr){
+  boolean check(String s, State curr, Map<State, Set<String>> visit){
 
     // Reach a final state and the string is fully matched
     if (s.length() == 0 && curr.isFinal()){
@@ -179,6 +179,23 @@ public class NFA {
       return false;
     }
 
+    // Encounter an Epsilon loop (string mutation does not change)
+    if (visit.containsKey(curr)){
+      Set<String> visitMutation= visit.get(curr);
+      if (visitMutation.contains(s)){
+        // System.out.println(s + " vs. " + visitedPattern);
+        return false;
+      }
+      else {
+        visitMutation.add(s);
+      }
+    }
+    else {
+      Set<String> toAdd = new HashSet<>();
+      toAdd.add(s);
+      visit.put(curr, toAdd);
+    }
+    
     char currChar = 0;
 
     if (s.length() != 0){
@@ -192,11 +209,11 @@ public class NFA {
       State next = tran.getEndState();
 
       if (tran.getName().equals(currChar)){
-        String subS = s.substring(1);
-        result = check(subS, next);
+        String subS = s.substring(1); // 1 : n
+        result = check(subS, next, visit);
       }
       else if (tran.getName().equals('#')){
-        result = check(s, next);
+        result = check(s, next, visit); // 0 : n
       }
 
       // If found a match, return immediately
@@ -207,7 +224,6 @@ public class NFA {
 
     return result;
   }
-
 
   /*********** NFA Helper functions ***********/
 
@@ -411,9 +427,9 @@ public class NFA {
 
     // Build new Package as a wrapper
     List<State> finals = new ArrayList<>();
-    finals.add(eStartState);
+    finals.add(starStart);
 
-    Package result = new Package(eStartState, finals);
+    Package result = new Package(starStart, finals);
 
     return result;
   }
@@ -431,8 +447,8 @@ public class NFA {
     return numStates;
   }
 
-  public List<State> getFinalStates(){
-    return finalStates;
+  public List<Object> getFinalStates(){
+    return final_states();
   }
 
   /*********** Psuedo public methods for testing ***********/

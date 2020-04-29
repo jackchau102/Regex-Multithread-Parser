@@ -198,7 +198,7 @@ public class NFATest {
         assertEquals(result0.size(), 2); 
         // System.out.println(result0);
 
-        assertEquals(result2.size(), 4);
+        assertEquals(result2.size(), 2);
         // System.out.println(result2);
     }
 
@@ -217,12 +217,12 @@ public class NFATest {
         // assertEquals(rp1, "a*b.c|");
     }
 
-    // @Test 
+    @Test 
     public void testBuildNFA(){
-        NFA nfa1 = new NFA();
-        Parser p1 = new Parser("(a|b)(e|f)");
+        // NFA nfa1 = new NFA();
+        Parser p1 = new Parser("(a*)*");
         Regex r1 = p1.parse();
-        System.out.println("\n" + nfa1.getPostfix(r1.toString()));
+        // System.out.println("\n" + nfa1.getPostfix(r1.toString()));
 
         NFA newNFA = new NFA(r1);
 
@@ -232,7 +232,15 @@ public class NFATest {
         System.out.println();
 
         for (Map.Entry<State, List<Transition>> entry : entryS){
-            System.out.print(entry.getKey() + ": ");
+            String finalString;
+            if (entry.getKey().isFinal()){
+                finalString = "(f)";
+            }
+            else{
+                finalString = "";
+            }
+            System.out.print(entry.getKey() + finalString + ": ");
+            
             List<Transition> listTran = entry.getValue();
             for (Transition t : listTran)
                 System.out.print(t.getStartState().toString() + " -- " + t.getName() + " --> " + t.getEndState().toString() + "\t");
@@ -241,7 +249,7 @@ public class NFATest {
         /********************************************************/
     }
 
-    @Test
+    // @Test
     public void testBuildNFA2(){
         Parser p1 = new Parser("z");
         Regex r1 = p1.parse();
@@ -254,17 +262,18 @@ public class NFATest {
         System.out.println(newNFA.getStates());
         
         /************** Printing out the map **************/
-        Set<Map.Entry<State, List<Transition>>> entryS = (Set) newNFA.getMap().entrySet();
+        List<Object> finals = newNFA.getFinalStates();
 
-        System.out.println();
+        Object startState = newNFA.getStartState();
+        Object finalState = newNFA.getFinalStates().get(0);
 
-        for (Map.Entry<State, List<Transition>> entry : entryS){
-            System.out.print(entry.getKey() + ": ");
-            List<Transition> listTran = entry.getValue();
-            for (Transition t : listTran)
-                System.out.print(t.getStartState().toString() + " -- " + t.getName() + " --> " + t.getEndState().toString() + "\t");
-            System.out.println();
-        }
+        System.out.println(finalState);
+
+        List<Map.Entry<Character, Object>> trans_1 = newNFA.getTransition(startState);
+        List<Map.Entry<Character, Object>> trans_2 = newNFA.getTransition(finalState);
+
+        System.out.println(trans_1);
+        System.out.println(trans_2);
         /********************************************************/
     }
 }
